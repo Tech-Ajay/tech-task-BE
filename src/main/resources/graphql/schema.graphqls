@@ -1,0 +1,41 @@
+type Query {
+    findAllBooks: [Book!]!
+    findBookById(id: Int): Book
+    findBooksByDateRange(startDate: String!, endDate: String!): [Book!]!
+    findBooksByTitleContaining(title: String!): [Book!]!
+    findAllBooksSortedByTitle(ascending: Boolean!): [Book!]!
+    findAllBooksSortedByDate(ascending: Boolean!): [Book!]!
+    getAllBookTitles: [String!]!
+    findAllBooksSorted(sortField: SortField!, sortOrder: SortOrder!): [Book!]!
+}
+
+type Mutation {
+    createBook(
+        title: String!, 
+        author: String!, 
+        publishedDate: String!,
+        description: String,
+        imageUrl: String
+    ): Book!
+    deleteBook(id: Int!): Int!
+}
+
+type Book {
+    id: Int
+    title: String!
+    author: String!
+    publishedDate: String!
+    description: String
+    imageUrl: String
+}
+
+enum SortField {
+    TITLE
+    AUTHOR
+    PUBLISHED_DATE
+}
+
+enum SortOrder {
+    ASC
+    DESC
+}

@@ -1,0 +1,8 @@
+query findBooksByTitleContaining($title: String!) {
+    findBooksByTitleContaining(title: $title) {
+        id
+        title
+        author
+        publishedDate
+    }
+} 

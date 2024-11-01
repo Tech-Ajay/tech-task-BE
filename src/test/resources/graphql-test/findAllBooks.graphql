@@ -1,0 +1,10 @@
+query findAllBooks {
+    findAllBooks {
+        id
+        title
+        author
+        publishedDate
+        description
+        imageUrl
+    }
+}

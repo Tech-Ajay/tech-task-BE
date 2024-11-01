@@ -1,0 +1,10 @@
+query findAllBooksSorted($sortField: SortField!, $sortOrder: SortOrder!) {
+    findAllBooksSorted(sortField: $sortField, sortOrder: $sortOrder) {
+        id
+        title
+        author
+        publishedDate
+        description
+        imageUrl
+    }
+} 

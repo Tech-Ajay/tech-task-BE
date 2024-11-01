@@ -1,0 +1,8 @@
+query findAllBooksSortedByDate($ascending: Boolean!) {
+    findAllBooksSortedByDate(ascending: $ascending) {
+        id
+        title
+        author
+        publishedDate
+    }
+} 

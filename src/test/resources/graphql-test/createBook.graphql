@@ -1,0 +1,16 @@
+mutation createBook($title: String!, $author: String!, $publishedDate: String!, $description: String, $imageUrl: String) {
+    createBook(
+        title: $title, 
+        author: $author, 
+        publishedDate: $publishedDate, 
+        description: $description, 
+        imageUrl: $imageUrl
+    ) {
+        id
+        title
+        author
+        publishedDate
+        description
+        imageUrl
+    }
+}
