@@ -7,6 +7,7 @@ type Query {
     findAllBooksSortedByDate(ascending: Boolean!): [Book!]!
     getAllBookTitles: [String!]!
     findAllBooksSorted(sortField: SortField!, sortOrder: SortOrder!): [Book!]!
+    findBooksByAuthorContaining(author: String!): [Book!]!
 }
 
 type Mutation {

@@ -78,5 +78,9 @@ public class BookService {
             bookRepository.findAllByOrderByPublishedDateAsc() : 
             bookRepository.findAllByOrderByPublishedDateDesc();
     }
+
+    public List<Book> findByAuthorContaining(String author) {
+        return bookRepository.findByAuthorContainingIgnoreCase(author);
+    }
 }
 

@@ -104,4 +104,9 @@ public class BookController {
     ) {
         return bookService.findAllSorted(sortField, sortOrder);
     }
+
+    @QueryMapping
+    public List<Book> findBooksByAuthorContaining(@Argument String author) {
+        return bookService.findByAuthorContaining(author);
+    }
 }
