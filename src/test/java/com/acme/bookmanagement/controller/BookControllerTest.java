@@ -20,15 +20,20 @@ import java.util.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+// Test class for GraphQL Book Controller using Spring's GraphQlTest
+// This annotation loads only the necessary components for testing GraphQL endpoints
 @GraphQlTest(BookController.class)
 public class BookControllerTest {
 
+    // GraphQlTester provides utilities for testing GraphQL queries
     @Autowired
     private GraphQlTester graphQlTester;
 
+    // Mock the service layer to control its behavior in tests
     @MockBean
     private BookService bookService;
 
+    // Test data: Map of sample books used across test cases
     private final Map<Long, Book> books = Map.of(
             1L, new Book(1L,
                     "title-1",
@@ -46,18 +51,17 @@ public class BookControllerTest {
 
     @Test
     void shouldGetBookById() {
-        List<Book> allBooks = books.values().stream()
-                .sorted(Comparator.comparing(Book::getId))
-                .toList();
+        // Mock the service to return a specific book when findById is called
         when(this.bookService.findById(1L))
                 .thenReturn(Optional.ofNullable(books.get(1L)));
 
+        // Execute GraphQL query and verify response
         this.graphQlTester
-                .documentName("findBookById")
-                .variable("id", 1L)
-                .execute()
-                .path("findBookById")
-                .matchesJson("""
+                .documentName("findBookById")  // References a .graphql file with the query
+                .variable("id", 1L)           // Set query variables
+                .execute()                    // Run the query
+                .path("findBookById")         // Navigate to response field
+                .matchesJson("""             // Verify exact JSON match
                     {
                         "id": 1,
                         "title": "title-1",
@@ -155,18 +159,21 @@ public class BookControllerTest {
 
     @Test
     void shouldGetPaginatedBooks() {
+        // Create a Page object with test data and pagination info
         Page<Book> page = new PageImpl<>(
             new ArrayList<>(books.values()),
-            PageRequest.of(0, 2),
+            PageRequest.of(0, 2),  // Page 0, size 2
             books.size()
         );
         
+        // Mock service to return paginated results with sorting and filtering
         when(this.bookService.findAllWithPagination(
-            eq(0), eq(2), 
-            eq(SortField.TITLE), eq(SortOrder.ASC),
-            eq("title"), eq("author")))
+            eq(0), eq(2),                           // Page number and size
+            eq(SortField.TITLE), eq(SortOrder.ASC), // Sorting parameters
+            eq("title"), eq("author")))             // Filter parameters
         .thenReturn(page);
 
+        // Execute GraphQL query with pagination, sorting, and filtering
         this.graphQlTester
             .documentName("findAllBooksWithPagination")
             .variable("page", 0)
@@ -193,10 +200,10 @@ public class BookControllerTest {
                             "publishedDate": "2021-02-03"
                         }
                     ],
-                    "totalElements": 2,
-                    "totalPages": 1,
-                    "pageNumber": 0,
-                    "pageSize": 2
+                    "totalElements": 2,  // Total number of books
+                    "totalPages": 1,     // Total number of pages
+                    "pageNumber": 0,     // Current page number
+                    "pageSize": 2        // Items per page
                 }
             """);
     }
