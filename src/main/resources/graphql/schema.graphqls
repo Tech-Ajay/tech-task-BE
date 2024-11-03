@@ -8,6 +8,14 @@ type Query {
     getAllBookTitles: [String!]!
     findAllBooksSorted(sortField: SortField!, sortOrder: SortOrder!): [Book!]!
     findBooksByAuthorContaining(author: String!): [Book!]!
+    findAllBooksWithPagination(
+        page: Int!, 
+        size: Int!, 
+        sortField: SortField, 
+        sortOrder: SortOrder,
+        titleFilter: String,
+        authorFilter: String
+    ): BookPage!
 }
 
 type Mutation {
@@ -39,4 +47,12 @@ enum SortField {
 enum SortOrder {
     ASC
     DESC
+}
+
+type BookPage {
+    content: [Book!]!
+    totalElements: Int!
+    totalPages: Int!
+    pageNumber: Int!
+    pageSize: Int!
 }

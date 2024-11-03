@@ -4,6 +4,11 @@ import com.acme.bookmanagement.model.Book;
 import com.acme.bookmanagement.model.SortField;
 import com.acme.bookmanagement.model.SortOrder;
 import com.acme.bookmanagement.repository.BookRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -81,6 +86,42 @@ public class BookService {
 
     public List<Book> findByAuthorContaining(String author) {
         return bookRepository.findByAuthorContainingIgnoreCase(author);
+    }
+
+    public Page<Book> findAllWithPagination(
+        Integer page, 
+        Integer size, 
+        SortField sortField,
+        SortOrder sortOrder,
+        String titleFilter,
+        String authorFilter
+    ) {
+        Sort sort = Sort.unsorted();
+        if (sortField != null && sortOrder != null) {
+            String fieldName = switch (sortField) {
+                case TITLE -> "title";
+                case AUTHOR -> "author";
+                case PUBLISHED_DATE -> "publishedDate";
+            };
+            sort = Sort.by(sortOrder == SortOrder.ASC ? 
+                Sort.Direction.ASC : Sort.Direction.DESC, fieldName);
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        
+        Specification<Book> spec = Specification.where(null);
+        if (titleFilter != null && !titleFilter.isEmpty()) {
+            spec = spec.and((root, query, cb) -> 
+                cb.like(cb.lower(root.get("title")), 
+                    "%" + titleFilter.toLowerCase() + "%"));
+        }
+        if (authorFilter != null && !authorFilter.isEmpty()) {
+            spec = spec.and((root, query, cb) -> 
+                cb.like(cb.lower(root.get("author")), 
+                    "%" + authorFilter.toLowerCase() + "%"));
+        }
+
+        return bookRepository.findAll(spec, pageable);
     }
 }
 

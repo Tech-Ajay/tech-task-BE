@@ -7,6 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -145,5 +151,53 @@ public class BookControllerTest {
                 .execute()
                 .path("deleteBook")
                 .matchesJson("1");
+    }
+
+    @Test
+    void shouldGetPaginatedBooks() {
+        Page<Book> page = new PageImpl<>(
+            new ArrayList<>(books.values()),
+            PageRequest.of(0, 2),
+            books.size()
+        );
+        
+        when(this.bookService.findAllWithPagination(
+            eq(0), eq(2), 
+            eq(SortField.TITLE), eq(SortOrder.ASC),
+            eq("title"), eq("author")))
+        .thenReturn(page);
+
+        this.graphQlTester
+            .documentName("findAllBooksWithPagination")
+            .variable("page", 0)
+            .variable("size", 2)
+            .variable("sortField", "TITLE")
+            .variable("sortOrder", "ASC")
+            .variable("titleFilter", "title")
+            .variable("authorFilter", "author")
+            .execute()
+            .path("findAllBooksWithPagination")
+            .matchesJson("""
+                {
+                    "content": [
+                        {
+                            "id": 1,
+                            "title": "title-1",
+                            "author": "author-1",
+                            "publishedDate": "2021-02-03"
+                        },
+                        {
+                            "id": 2,
+                            "title": "title-2",
+                            "author": "author-2",
+                            "publishedDate": "2021-02-03"
+                        }
+                    ],
+                    "totalElements": 2,
+                    "totalPages": 1,
+                    "pageNumber": 0,
+                    "pageSize": 2
+                }
+            """);
     }
 }

@@ -1,0 +1,28 @@
+query findAllBooksWithPagination(
+    $page: Int!, 
+    $size: Int!, 
+    $sortField: SortField, 
+    $sortOrder: SortOrder,
+    $titleFilter: String,
+    $authorFilter: String
+) {
+    findAllBooksWithPagination(
+        page: $page, 
+        size: $size,
+        sortField: $sortField,
+        sortOrder: $sortOrder,
+        titleFilter: $titleFilter,
+        authorFilter: $authorFilter
+    ) {
+        content {
+            id
+            title
+            author
+            publishedDate
+        }
+        totalElements
+        totalPages
+        pageNumber
+        pageSize
+    }
+} 
